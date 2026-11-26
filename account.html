@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Student Sign In | Chemistry Achievers Academy</title>
+<link rel="stylesheet" href="./site.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4" defer></script>
+<script src="./account.js" defer></script>
+</head>
+<body>
+<header><div class="wrap">
+<nav aria-label="Academy"><strong>Chemistry Achievers Academy</strong></nav>
+<nav class="section-nav" aria-label="Quiz sections"><a href="./">2026 Board Exam PYQs</a><a href="./practice.html">Practice MCQ Test</a><a href="./papers.html">2026 Papers &amp; Marking Schemes</a><a href="./account.html" aria-current="page">Student sign in</a></nav>
+<h1>Student sign in</h1>
+</div></header>
+<main class="wrap account">
+<section class="card" id="sign-in" hidden>
+<h2>Choose how to sign in</h2>
+<button id="google" class="primary" type="button">Continue with Google</button>
+<form id="send-code">
+<label for="email">Email address</label>
+<input id="email" type="email" autocomplete="email" required>
+<button type="submit">Send code</button>
+</form>
+<form id="verify-code" hidden>
+<label for="code">Six-digit email code</label>
+<input id="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required>
+<button type="submit" class="primary">Verify code</button>
+</form>
+</section>
+<section class="card" id="signed-in" hidden>
+<h2>Signed in</h2>
+<p id="identity"></p>
+<div class="card-actions"><a href="./practice.html">Open Practice MCQ Test</a><button id="sign-out" type="button">Sign out</button></div>
+</section>
+<p id="auth-status" role="status">Loading sign-in…</p>
+<noscript>Enable JavaScript to sign in.</noscript>
+</main>
+</body>
+</html>

@@ -84,7 +84,7 @@ page = f"""<!doctype html>
 <body><header><div class="wrap">
 <nav aria-label="Academy links"><strong>Chemistry Achievers Academy</strong><a href="https://wa.me/919677795536">Ask a doubt ↗</a></nav>
 <nav class="section-nav" aria-label="Quiz sections"><a href="./">2026 Board Exam PYQs</a>
-<a href="./practice.html">Practice MCQ Test</a><a href="./papers.html" aria-current="page">2026 Papers &amp; Marking Schemes</a></nav>
+<a href="./practice.html">Practice MCQ Test</a><a href="./papers.html" aria-current="page">2026 Papers &amp; Marking Schemes</a><a href="./account.html">Student sign in</a></nav>
 <h1>2026 Papers &amp; Marking Schemes</h1><p>CBSE Class 12 Chemistry · Board Examination</p>
 </div></header><main class="wrap">
 <div class="paper-list">{''.join(cards)}</div>{status}
