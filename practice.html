@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#102540">
+<title>Practice MCQ Test | Chemistry Achievers Academy</title>
+<link rel="stylesheet" href="./site.css">
+<script src="./practice.js" defer></script>
+</head>
+<body>
+<header class="top"><nav class="wrap" aria-label="Main navigation"><a class="brand" href="./">Chemistry Achievers Academy</a><a href="./practice.html">Practice MCQ Test</a></nav></header>
+<main class="wrap quiz">
+<h1>Practice MCQ Test</h1>
+<p>Choose a chapter or practise across all chapters.</p>
+<form id="setup" class="panel">
+<div class="controls">
+<label>Chapter<select id="chapter" disabled><option value="">All chapters</option></select></label>
+<label>Questions<select id="count"><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="all">All available</option></select></label>
+<button id="start" disabled>Start test</button>
+</div>
+<p id="status" role="status">Loading the question bank…</p>
+<noscript>Enable JavaScript to take the test. <a href="./Practice_mcq_test.json" download>Download the questions</a>.</noscript>
+</form>
+<section id="test" class="panel test" aria-label="Quiz" hidden>
+<p class="meta" id="position"></p><progress id="progress" aria-label="Questions answered"></progress>
+<form id="question-form">
+<fieldset id="choices"><legend id="question" tabindex="-1"></legend><div id="options"></div></fieldset>
+<button id="check">Check answer</button>
+</form>
+<p id="feedback" class="feedback" role="status" hidden></p>
+<button id="next" type="button" hidden>Next question</button>
+</section>
+<section id="result" class="panel test" hidden>
+<h2 id="score" tabindex="-1"></h2>
+<button id="again" type="button">Choose another test</button>
+</section>
+</main>
+<footer><div class="wrap"><p>M. Prathap, M.Sc., B.Ed. · 8+ years of teaching experience</p><div class="links"><a href="https://chemistryachieversacademy.in">Academy website</a><a href="https://wa.me/919677795536">WhatsApp for doubts</a></div></div></footer>
+</body>
+</html>
