@@ -69,6 +69,21 @@ function element(tag, text, className) {
   return node;
 }
 
+function setChemistryText(node, text) {
+  const parts = [];
+  const notation = /<(sub|sup)>([^<>]*)<\/\1>|<br\s*\/?>/gi;
+  let cursor = 0;
+  for (const match of text.matchAll(notation)) {
+    parts.push(document.createTextNode(text.slice(cursor, match.index)));
+    const inline = document.createElement(match[1]?.toLowerCase() || "br");
+    if (match[1]) inline.textContent = match[2];
+    parts.push(inline);
+    cursor = match.index + match[0].length;
+  }
+  parts.push(document.createTextNode(text.slice(cursor)));
+  node.replaceChildren(...parts);
+}
+
 function button(text, className) {
   const node = element("button", text, className);
   node.type = "button";
@@ -95,7 +110,8 @@ function card(item, number) {
   });
   updateStar();
   top.append(star);
-  const title = element("h3", item.question);
+  const title = element("h3");
+  setChemistryText(title, item.question);
   title.id = item.id + "-title";
   node.setAttribute("aria-labelledby", title.id);
   const options = element("div", "", "options");
@@ -107,7 +123,8 @@ function card(item, number) {
   let revealed = false;
 
   const choices = item.options.map((option, index) => {
-    const choice = button(String.fromCharCode(65 + index) + ". " + option, "option");
+    const choice = button("", "option");
+    setChemistryText(choice, String.fromCharCode(65 + index) + ". " + option);
     choice.addEventListener("click", () => {
       if (hasAnswer(item) || revealed) return;
       saved[item.id] = { ...entry(item), answer: index };
@@ -131,10 +148,10 @@ function card(item, number) {
     feedback.hidden = !show;
     reveal.hidden = show;
     retry.hidden = !show;
-    feedback.textContent = show ?
+    setChemistryText(feedback, show ?
       (answered ? (selected === item.answerIndex ? "Correct. " : "Incorrect. ") : "") +
       "Answer: " + String.fromCharCode(65 + item.answerIndex) + ". " +
-      item.options[item.answerIndex] + "\n\n" + item.solution : "";
+      item.options[item.answerIndex] + "\n\n" + item.solution : "");
   }
 
   reveal.addEventListener("click", () => {
