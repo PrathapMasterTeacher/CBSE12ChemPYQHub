@@ -1,5 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor
-from html import escape
+from html import escape, unescape
+from urllib.parse import urljoin, urlsplit
 from io import BytesIO
 from pathlib import Path
 from urllib.request import Request, urlopen
@@ -69,8 +70,33 @@ def extract(kind):
         return {}
 
 
+marking_index = base + "marking-scheme.html"
+
+
+def find_2022_marking_archive():
+    try:
+        with urlopen(marking_index, timeout=10) as response:
+            page = response.read(2 * 1024 * 1024).decode("utf-8", errors="replace")
+        for row in re.findall(r"<tr\b[^>]*>.*?</tr>", page, re.I | re.S):
+            # The official Class XII 2022 main-exam Chemistry row is 6.78 MB.
+            if not re.search(r"\bCHEMISTRY\b", row, re.I) or not re.search(r"6\.78\s*MB", row, re.I):
+                continue
+            for href in re.findall(r"""href\s*=\s*["']([^"']+)["']""", row, re.I):
+                url = urljoin(marking_index, unescape(href))
+                parts = urlsplit(url)
+                if parts.scheme == "https" and parts.hostname == "www.cbse.gov.in" and parts.path.lower().endswith(".zip"):
+                    return url
+    except OSError as error:
+        print(f"Could not read the 2022 marking scheme index: {error}")
+    return None
+
+
 if year == 2022:
-    del archives["marking-scheme"]
+    marking_archive = find_2022_marking_archive()
+    if marking_archive:
+        archives["marking-scheme"] = marking_archive
+    else:
+        del archives["marking-scheme"]
 papers, schemes = {}, {}
 if year != 2021:
     with ThreadPoolExecutor(max_workers=2) as pool:
@@ -95,9 +121,9 @@ archive_links = "".join(
     f'<a href="{url}">All Chemistry {kind.replace("-", " ")}s (ZIP)</a>'
     for kind, url in archives.items()
 )
-if year == 2022:
+if year == 2022 and "marking-scheme" not in archives:
     archive_links += '<a href="https://www.cbse.gov.in/cbsenew/marking-scheme.html">CBSE marking scheme index</a>'
-    status = "<p>The official Chemistry question paper archive is below. A main-exam marking scheme ZIP was not verified.</p>"
+    status = "<p>The official Chemistry question paper archive is below. For the official marking scheme, open the CBSE index and select Chemistry under Class XII Examination 2022.</p>"
 if year == 2021:
     title = "2021–22 Sample Papers &amp; Marking Schemes"
     status = "<p>CBSE cancelled the regular 2021 Class XII board examination. These are official sample papers for the 2021–22 term-based session.</p>"
@@ -121,11 +147,11 @@ page = f"""<!doctype html>
 <link rel="stylesheet" href="./site.css"></head>
 <body><header><div class="wrap">
 <nav aria-label="Academy links"><strong>Chemistry Achievers Academy</strong><a href="https://wa.me/919677795536">Ask a doubt ↗</a></nav>
-<nav class="section-nav" aria-label="Quiz sections"><a href="./">2026 Board Exam PYQs</a>
+<nav class="section-nav" aria-label="Quiz sections"><a href="./">Home</a><a href="./board-2026.html">2026 Board Exam PYQs</a>
 <a href="./practice.html">Practice MCQ Test</a><a href="./mcq-test-1.html">MCQ Test 1</a><a href="./papers.html" {current_2026}>2026 Board Papers &amp; Marking Schemes</a><a href="./papers-2025.html" {current_2025}>2025 Board Papers &amp; Marking Schemes</a>{older_links}<a href="./account.html">Student sign in</a></nav>
 <h1>{title}</h1><p>CBSE Class 12 Chemistry · Board Examination</p>
 </div></header><main class="wrap">
-<div class="paper-list">{''.join(cards)}</div>{status}
+{status}<div class="paper-list">{''.join(cards)}</div>
 <section class="card"><h2>Official CBSE archives</h2><div class="paper-links">
 {archive_links}
 </div></section></main>

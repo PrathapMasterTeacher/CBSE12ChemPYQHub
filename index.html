@@ -3,72 +3,36 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#10283c">
-<meta name="description" content="{{description}}">
-<title>{{title}} | Chemistry Achievers Academy</title>
+<meta name="description" content="CBSE Class 12 Chemistry board papers, marking schemes and interactive chapter practice.">
+<title>CBSE Class 12 Chemistry | Chemistry Achievers Academy</title>
 <link rel="stylesheet" href="./site.css">
-<script src="./{{bank}}.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4" defer></script>
-<script src="./auth-client.js" defer></script>
-<script src="./practice.js" defer></script>
+<script src="./home.js" defer></script>
 </head>
-<body>
+<body class="academy-home">
 <header><div class="wrap">
-  <nav aria-label="Academy links"><strong>Chemistry Achievers Academy</strong><a href="https://wa.me/919677795536">Ask a doubt ↗</a></nav>
-  <nav class="section-nav" aria-label="Quiz sections">
-    <a href="./" {{pyqCurrent}}>2026 Board Exam PYQs</a>
-    <a href="./practice.html" {{practiceCurrent}}>Practice MCQ Test</a>
-    <a href="./mcq-test-1.html" {{testOneCurrent}}>MCQ Test 1</a>
-    <a href="./papers.html">2026 Board Papers &amp; Marking Schemes</a><a href="./papers-2025.html">2025 Board Papers &amp; Marking Schemes</a><a href="./papers-2024.html">2024 Board Papers &amp; Marking Schemes</a>
-<a href="./papers-2023.html">2023 Board Papers &amp; Marking Schemes</a>
-<a href="./papers-2022.html">2022 Board Papers &amp; Marking Schemes</a>
-<a href="./papers-2021.html">2021–22 Sample Papers &amp; Marking Schemes</a>
-<a href="./account.html">Student sign in</a>
-  </nav>
-  <h1>{{title}}</h1>
-  <p>{{description}}</p>
-</div></header>
+<nav aria-label="Academy navigation"><strong>Chemistry Achievers Academy</strong><a href="#board-papers">Board papers</a><a href="./account.html">Student sign in</a></nav>
+<div class="academy-hero">
+<p>CBSE CLASS XII · CHEMISTRY (043)</p>
+<h1>Class 12 Chemistry Revision Hub</h1>
+<p>Practise past questions, check official marking schemes, and build confidence with chapter-wise MCQ tests.</p>
+<div class="hero-actions"><a href="./board-2026.html">Practise 2026 PYQs</a><a href="#board-papers">Browse paper PDFs</a></div>
+</div></div></header>
 <main class="wrap">
-  <section class="workspace" aria-label="Quiz filters">
-    <label for="chapter">Chapter</label>
-    <select id="chapter" disabled><option value="">All chapters</option></select>
-    <label for="status-filter">Practice status</label>
-    <select id="status-filter" disabled>
-      <option value="">All questions</option><option value="new">Unanswered</option>
-      <option value="correct">Correct</option><option value="wrong">Incorrect</option>
-      <option value="starred">Starred</option>
-    </select>
-    <button id="resume" type="button" disabled>Resume practice</button>
-    <div class="progress">
-      <p id="summary" role="status">Loading questions…</p>
-      <progress id="progress" aria-label="Chapter practice progress" max="1" value="0"></progress>
-      <p id="sync-note" role="status" hidden>A practice answer could not sync. Your answer is saved on this device.</p>
-      <p id="storage-note" hidden>Progress is saved for this visit only.</p>
-    </div>
-  </section>
-  <section class="workspace board-filters" id="board-filters" aria-label="2026 question filters" hidden>
-    <label for="paper">Paper set</label><select id="paper"><option value="">All sets</option></select>
-    <label for="question-type">Question type</label><select id="question-type">
-      <option value="">All types</option><option value="MCQ">1-mark MCQ</option>
-      <option value="Assertion–Reason">Assertion–Reason</option><option value="2 Marks">2 Marks</option>
-      <option value="3 Marks">3 Marks</option><option value="Case-Based">Case-Based</option>
-      <option value="5 Marks">5 Marks</option>
-    </select>
-    <button id="full-paper" type="button">View full paper</button>
-  </section>
-  <section class="workspace test-one-filters" id="test-one-filters" aria-label="MCQ Test 1 filters" hidden>
-    <label for="test-set">Question set</label><select id="test-set">
-      <option value="">Both sets</option><option value="1">Set 1</option><option value="2">Set 2</option>
-    </select>
-  </section>
-  <div class="list-head"><h2 id="chapter-heading">Practice questions</h2><p id="page-info"></p></div>
-  <div id="questions"></div>
-  <nav id="pagination" class="pagination" aria-label="Question pages" hidden>
-    <button id="previous" type="button">← Previous</button>
-    <button id="next" type="button">Next →</button>
-  </nav>
-  <noscript>Enable JavaScript to use the online quiz.</noscript>
-</main>
-<footer class="wrap"><p>M. Prathap, M.Sc., B.Ed. · 8+ years of teaching experience</p><a href="https://chemistryachieversacademy.in">Academy website ↗</a></footer>
-</body>
-</html>
+<section aria-labelledby="practice-heading">
+<h2 id="practice-heading">Online practice</h2>
+<div class="academy-grid">
+<a class="resource-card" href="./board-2026.html"><strong>2026 Board Exam PYQs</strong><span>Practise by chapter, paper set and question type.</span></a>
+<a class="resource-card" href="./mcq-test-1.html"><strong>MCQ Test 1</strong><span>320 questions with detailed solutions, 32 per chapter.</span></a>
+<a class="resource-card" href="./practice.html"><strong>Practice MCQ Test</strong><span>500 questions across 10 chapters with instant feedback.</span></a>
+</div></section>
+<section id="board-papers" aria-labelledby="papers-heading">
+<h2 id="papers-heading">Question papers &amp; marking schemes</h2>
+<div class="academy-grid"><a class="year-card" href="./papers.html"><strong>2026</strong><span>Board question papers<br>Marking schemes</span><span aria-hidden="true">↗</span></a>
+<a class="year-card" href="./papers-2025.html"><strong>2025</strong><span>Board question papers<br>Marking schemes</span><span aria-hidden="true">↗</span></a>
+<a class="year-card" href="./papers-2024.html"><strong>2024</strong><span>Board question papers<br>Marking schemes</span><span aria-hidden="true">↗</span></a>
+<a class="year-card" href="./papers-2023.html"><strong>2023</strong><span>Board question papers<br>Marking schemes</span><span aria-hidden="true">↗</span></a>
+<a class="year-card" href="./papers-2022.html"><strong>2022</strong><span>Board question papers<br>Marking schemes</span><span aria-hidden="true">↗</span></a>
+<a class="year-card" href="./papers-2021.html"><strong>2021–22</strong><span>Term 1 &amp; Term 2 sample papers<br>Marking schemes</span><span aria-hidden="true">↗</span></a></div>
+</section></main>
+<footer class="wrap"><p>M. Prathap, M.Sc., B.Ed. · Chemistry Achievers Academy</p><a href="https://wa.me/919677795536">Ask a doubt on WhatsApp ↗</a></footer>
+</body></html>

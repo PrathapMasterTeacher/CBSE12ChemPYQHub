@@ -5,11 +5,11 @@ const root = name => new URL(name, import.meta.url);
 const publish = new URL('./public/', import.meta.url);
 await mkdir(publish, { recursive: true });
 
-for (const file of ['practice.js', 'site.css', 'account.html', 'account.js', 'auth-client.js', 'history.js']) {
+for (const file of ['index.html', 'home.js', 'practice.js', 'site.css', 'account.html', 'account.js', 'auth-client.js', 'history.js']) {
   await copyFile(root(file), new URL(file, publish));
 }
 
-const template = await readFile(root('index.html'), 'utf8');
+const template = await readFile(root('quiz-template.html'), 'utf8');
 const sections = [
   {
     file: 'mcq-test-1.html', source: 'mcq-test-1.json', bank: 'mcq-test-1-bank',
@@ -18,7 +18,7 @@ const sections = [
     pyqCurrent: '', practiceCurrent: '', testOneCurrent: 'aria-current="page"'
   },
   {
-    file: 'index.html', source: '2026.json', bank: 'board-2026',
+    file: 'board-2026.html', source: '2026.json', bank: 'board-2026',
     title: '2026 Board Exam PYQs',
     description: 'Practise past exam questions by chapter and review the solutions.',
     pyqCurrent: 'aria-current="page"', practiceCurrent: ''
