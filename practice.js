@@ -22,6 +22,26 @@ try {
   get("storage-note").hidden = false;
 }
 
+async function recordAttempt(item, selected) {
+  const client = window.caaAuth;
+  if (!client || item.answerIndex === null) return;
+  const note = get("sync-note");
+  try {
+    const { data } = await client.auth.getSession();
+    if (!data.session) return;
+    const { error } = await client.from("caa_practice_attempts").insert({
+      quiz: isBoard ? "board-2026" : "practice",
+      question_id: item.id,
+      chapter: item.chapter,
+      selected,
+      correct: selected === item.answerIndex
+    });
+    if (error && error.code !== "23505") throw error;
+  } catch {
+    note.hidden = false;
+  }
+}
+
 function save() {
   try {
     localStorage.setItem(key, JSON.stringify(saved));
@@ -168,6 +188,7 @@ function card(item, number) {
     choice.addEventListener("click", () => {
       if (hasAnswer(item) || revealed) return;
       saved[item.id] = { ...entry(item), answer: index };
+      void recordAttempt(item, index);
       save();
       updateProgress();
       refresh();

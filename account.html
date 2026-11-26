@@ -6,7 +6,9 @@
 <title>Student Sign In | Chemistry Achievers Academy</title>
 <link rel="stylesheet" href="./site.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4" defer></script>
+<script src="./auth-client.js" defer></script>
 <script src="./account.js" defer></script>
+<script src="./history.js" defer></script>
 </head>
 <body>
 <header><div class="wrap">
@@ -33,6 +35,17 @@
 <h2>Signed in</h2>
 <p id="identity"></p>
 <div class="card-actions"><a href="./practice.html">Open Practice MCQ Test</a><button id="sign-out" type="button">Sign out</button></div>
+</section>
+<section class="card" id="history" hidden>
+<h2 id="history-heading">My practice history</h2>
+<p id="history-status" role="status"></p>
+<form id="history-filter" hidden>
+<label for="student-email">Student email</label>
+<input id="student-email" type="email" placeholder="All students">
+<button type="submit">Filter history</button>
+</form>
+<div class="history-table"><table><thead><tr><th scope="col">Date</th><th scope="col" id="student-column" hidden>Student</th><th scope="col">Quiz</th><th scope="col">Chapter</th><th scope="col">Practice mark</th></tr></thead><tbody id="history-rows"></tbody></table></div>
+<div class="card-actions"><button id="history-prev" type="button" disabled>Previous</button><button id="history-next" type="button" disabled>Next</button></div>
 </section>
 <p id="auth-status" role="status">Loading sign-in…</p>
 <noscript>Enable JavaScript to sign in.</noscript>

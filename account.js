@@ -2,11 +2,7 @@
 
 const get = id => document.getElementById(id);
 const status = get("auth-status");
-const client = window.supabase?.createClient(
-  "https://rytolspaeqblkeekeuqm.supabase.co",
-  "sb_publishable_lbHUabh8C8bDqoWp4JilaA_zEzhjnd4",
-  { auth: { flowType: "pkce" } }
-);
+const client = window.caaAuth;
 let pendingEmail = "";
 let busy = false;
 

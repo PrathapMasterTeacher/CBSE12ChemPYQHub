@@ -5,7 +5,7 @@ const root = name => new URL(name, import.meta.url);
 const publish = new URL('./public/', import.meta.url);
 await mkdir(publish, { recursive: true });
 
-for (const file of ['practice.js', 'site.css', 'account.html', 'account.js']) {
+for (const file of ['practice.js', 'site.css', 'account.html', 'account.js', 'auth-client.js', 'history.js']) {
   await copyFile(root(file), new URL(file, publish));
 }
 

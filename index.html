@@ -8,6 +8,8 @@
 <title>{{title}} | Chemistry Achievers Academy</title>
 <link rel="stylesheet" href="./site.css">
 <script src="./{{bank}}.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4" defer></script>
+<script src="./auth-client.js" defer></script>
 <script src="./practice.js" defer></script>
 </head>
 <body>
@@ -35,6 +37,7 @@
     <div class="progress">
       <p id="summary" role="status">Loading questions…</p>
       <progress id="progress" aria-label="Chapter practice progress" max="1" value="0"></progress>
+      <p id="sync-note" role="status" hidden>A practice answer could not sync. Your answer is saved on this device.</p>
       <p id="storage-note" hidden>Progress is saved for this visit only.</p>
     </div>
   </section>

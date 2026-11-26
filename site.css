@@ -4,3 +4,5 @@
 .board-filters{margin-top:-.75rem}.paper-list{display:grid;gap:.8rem;margin:1rem 0}.paper-list .card{margin:0}.paper-list h2{margin-top:0}.paper-links{display:grid;gap:.5rem;justify-items:start}.card-actions a{font-weight:650;color:var(--teal)}
 
 .account{max-width:36rem;padding-top:1rem}.account form{display:grid;gap:.5rem;margin-top:1rem}.account input{font:inherit;padding:.6rem;border:1px solid #adbfca;border-radius:.5rem;width:100%}.account h2{margin-top:0}
+
+.history-table{overflow:auto;margin:1rem 0}.history-table table{border-collapse:collapse;width:100%;font-size:.9rem}.history-table th,.history-table td{padding:.5rem;text-align:left;border-bottom:1px solid var(--line)}
