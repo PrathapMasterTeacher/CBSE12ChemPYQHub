@@ -1,13 +1,50 @@
 import { mkdir, readFile, copyFile, writeFile } from 'node:fs/promises';
 
+const root = name => new URL(name, import.meta.url);
 const publish = new URL('./public/', import.meta.url);
 await mkdir(publish, { recursive: true });
-for (const file of ['index.html', 'practice.js', 'site.css']) {
-  await copyFile(new URL(file, import.meta.url), new URL(file, publish));
+
+for (const file of ['practice.js', 'site.css']) {
+  await copyFile(root(file), new URL(file, publish));
 }
-const bank = JSON.parse(await readFile(new URL('./Practice_mcq_test.json', import.meta.url), 'utf8'));
-if (!Array.isArray(bank) || !bank.length) throw new Error('The practice question bank is empty.');
-const content = bank.map(({ id, chapter, question, options, answerIndex, solution }) => ({
-  id, chapter, question, options, answerIndex, solution
-}));
-await writeFile(new URL('question-bank.js', publish), 'window.chemistryQuestions = ' + JSON.stringify(content) + ';\n');
+
+const template = await readFile(root('index.html'), 'utf8');
+const sections = [
+  {
+    file: 'index.html', source: '2026.json', bank: 'board-2026',
+    title: '2026 Board Exam PYQs',
+    description: 'Practise past exam questions by chapter and review the solutions.',
+    pyqCurrent: 'aria-current="page"', practiceCurrent: ''
+  },
+  {
+    file: 'practice.html', source: 'Practice_mcq_test.json', bank: 'practice-bank',
+    title: 'Practice MCQ Test',
+    description: '500 MCQs across 10 chapters with instant feedback and explanations.',
+    pyqCurrent: '', practiceCurrent: 'aria-current="page"'
+  }
+];
+
+for (const section of sections) {
+  const source = JSON.parse(await readFile(root(section.source), 'utf8'));
+  const questions = Array.isArray(source) ? source : source.questions;
+  if (!Array.isArray(questions) || !questions.length) {
+    throw new Error('Question bank is empty: ' + section.source);
+  }
+  const content = questions.map((item, index) => {
+    const options = Array.isArray(item.options) ? item.options.map(String) : [];
+    const answerIndex = Number.isInteger(item.answerIndex) &&
+      item.answerIndex >= 0 && item.answerIndex < options.length ? item.answerIndex : null;
+    return {
+      id: String(item.id ?? section.bank + '-' + index),
+      chapter: String(item.chapter ?? 'Mixed topics'),
+      question: String(item.question ?? ''),
+      options, answerIndex,
+      solution: String(item.solution || item.answer || ''),
+      paperCode: item.paperCode, marks: item.marks,
+      originalQuestionNumber: item.originalQuestionNumber
+    };
+  });
+  await writeFile(new URL(section.file, publish), template.replace(/\{\{(\w+)\}\}/g, (_, name) => section[name]));
+  await writeFile(new URL(section.bank + '.js', publish),
+    'window.chemistryQuestions = ' + JSON.stringify(content) + ';\n');
+}

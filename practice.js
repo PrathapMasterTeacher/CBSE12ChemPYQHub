@@ -7,7 +7,8 @@ const filter = get("status-filter");
 const summary = get("summary");
 const container = get("questions");
 const pageSize = 10;
-const key = "chemistry-hub-progress-v1";
+const isBoard = !!document.querySelector('script[src="./board-2026.js"]');
+const key = isBoard ? "chemistry-hub-pyq-2026-v1" : "chemistry-hub-progress-v1";
 let saved = {};
 let page = 0;
 let visible = [];
@@ -42,7 +43,7 @@ function chapterQuestions() {
 
 function matches(item) {
   switch (filter.value) {
-    case "new": return !hasAnswer(item);
+    case "new": return item.answerIndex !== null && !hasAnswer(item);
     case "correct": return entry(item).answer === item.answerIndex;
     case "wrong": return hasAnswer(item) && entry(item).answer !== item.answerIndex;
     case "starred": return entry(item).starred === true;
@@ -51,11 +52,11 @@ function matches(item) {
 }
 
 function updateProgress() {
-  const pool = chapterQuestions();
+  const pool = chapterQuestions().filter(item => item.answerIndex !== null);
   const attempted = pool.filter(hasAnswer).length;
   const correct = pool.filter(item => entry(item).answer === item.answerIndex).length;
-  const starred = pool.filter(item => entry(item).starred).length;
-  summary.textContent = attempted + " / " + pool.length + " answered · " + correct +
+  const starred = chapterQuestions().filter(item => entry(item).starred).length;
+  summary.textContent = attempted + " / " + pool.length + " MCQs answered · " + correct +
     " correct · " + (attempted - correct) + " incorrect · " + starred + " starred";
   get("progress").max = pool.length || 1;
   get("progress").value = attempted;
@@ -69,19 +70,43 @@ function element(tag, text, className) {
   return node;
 }
 
-function setChemistryText(node, text) {
-  const parts = [];
-  const notation = /<(sub|sup)>([^<>]*)<\/\1>|<br\s*\/?>/gi;
-  let cursor = 0;
-  for (const match of text.matchAll(notation)) {
-    parts.push(document.createTextNode(text.slice(cursor, match.index)));
-    const inline = document.createElement(match[1]?.toLowerCase() || "br");
-    if (match[1]) inline.textContent = match[2];
-    parts.push(inline);
-    cursor = match.index + match[0].length;
+const formattingTags = new Set(["sub", "sup", "br", "p", "div", "span", "b", "strong", "i", "em", "small", "ul", "ol", "li", "table", "thead", "tbody", "tr", "td", "th"]);
+const svgTags = new Set(["svg", "g", "path", "text", "line", "polyline", "polygon", "circle", "ellipse", "rect"]);
+const svgAttributes = new Set(["viewBox", "width", "height", "d", "fill", "stroke", "stroke-width", "points", "x", "y", "x1", "y1", "x2", "y2", "cx", "cy", "r", "rx", "ry", "font-size", "text-anchor", "transform", "role", "aria-label"]);
+
+function copyQuestionNode(source, target) {
+  if (source.nodeType === 3) {
+    target.append(document.createTextNode(source.textContent));
+    return;
   }
-  parts.push(document.createTextNode(text.slice(cursor)));
-  node.replaceChildren(...parts);
+  if (source.nodeType !== 1) return;
+  const tag = source.localName;
+  if (["script", "style", "iframe", "object", "foreignObject"].includes(tag)) return;
+  let copy;
+  if (source.namespaceURI === "http://www.w3.org/2000/svg" && svgTags.has(tag)) {
+    copy = document.createElementNS(source.namespaceURI, tag);
+    for (const { name, value } of source.attributes) {
+      if (svgAttributes.has(name) && !/url\s*\(/i.test(value)) copy.setAttribute(name, value);
+    }
+  } else if (tag === "img") {
+    const src = source.getAttribute("src") || "";
+    if (!/^data:image\/(?:png|jpe?g|gif|webp);base64,[A-Za-z0-9+/=\s]+$/i.test(src)) return;
+    copy = document.createElement("img");
+    copy.alt = source.getAttribute("alt") || "Question illustration";
+    copy.src = src;
+    copy.loading = "lazy";
+  } else if (formattingTags.has(tag)) {
+    copy = document.createElement(tag);
+  }
+  for (const child of source.childNodes) copyQuestionNode(child, copy || target);
+  if (copy) target.append(copy);
+}
+
+function setChemistryText(node, text) {
+  const template = document.createElement("template");
+  template.innerHTML = text;
+  node.replaceChildren();
+  for (const child of template.content.childNodes) copyQuestionNode(child, node);
 }
 
 function button(text, className) {
@@ -95,7 +120,11 @@ function card(item, number) {
   node.id = item.id;
   node.tabIndex = -1;
   const top = element("div", "", "card-top");
-  top.append(element("p", "Question " + number + " · " + item.chapter));
+  const details = ["Question " + number, item.chapter];
+  if (item.paperCode) details.push("Paper " + item.paperCode);
+  if (item.originalQuestionNumber) details.push("Q" + item.originalQuestionNumber);
+  if (item.marks) details.push(item.marks + (Number(item.marks) === 1 ? " mark" : " marks"));
+  top.append(element("p", details.join(" · ")));
   const star = button("☆ Star", "star");
   function updateStar() {
     const starred = entry(item).starred === true;
@@ -121,6 +150,8 @@ function card(item, number) {
   const feedback = element("p", "", "feedback");
   feedback.setAttribute("role", "status");
   let revealed = false;
+  const graded = item.answerIndex !== null;
+  if (!graded) options.append(element("p", "Work out your answer, then reveal the solution to check it."));
 
   const choices = item.options.map((option, index) => {
     const choice = button("", "option");
@@ -141,7 +172,7 @@ function card(item, number) {
     const selected = entry(item).answer;
     const show = answered || revealed;
     choices.forEach((choice, index) => {
-      choice.disabled = show;
+      choice.disabled = show || !graded;
       choice.classList.toggle("correct", show && index === item.answerIndex);
       choice.classList.toggle("wrong", answered && index === selected && selected !== item.answerIndex);
     });
@@ -150,8 +181,8 @@ function card(item, number) {
     retry.hidden = !show;
     setChemistryText(feedback, show ?
       (answered ? (selected === item.answerIndex ? "Correct. " : "Incorrect. ") : "") +
-      "Answer: " + String.fromCharCode(65 + item.answerIndex) + ". " +
-      item.options[item.answerIndex] + "\n\n" + item.solution : "");
+      (graded ? "Answer: " + String.fromCharCode(65 + item.answerIndex) + ".<br>" : "") +
+      (item.solution || (graded ? item.options[item.answerIndex] : "Solution unavailable.")) : "");
   }
 
   reveal.addEventListener("click", () => {
@@ -167,7 +198,7 @@ function card(item, number) {
       updateProgress();
     }
     refresh();
-    choices[0].focus();
+    (graded ? choices[0] : reveal).focus();
   });
   options.append(...choices);
   actions.append(reveal, retry);
@@ -206,7 +237,7 @@ if (bank.length) {
   get("previous").addEventListener("click", () => { page--; render(); goToTopCard(); });
   get("next").addEventListener("click", () => { page++; render(); goToTopCard(); });
   get("resume").addEventListener("click", () => {
-    const first = chapterQuestions().find(item => !hasAnswer(item));
+    const first = chapterQuestions().find(item => item.answerIndex !== null && !hasAnswer(item));
     if (!first) return;
     filter.value = "new";
     page = 0;

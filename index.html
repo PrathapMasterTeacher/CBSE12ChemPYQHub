@@ -4,17 +4,21 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#10283c">
-<meta name="description" content="Practise 500 CBSE Class 12 Chemistry MCQs with instant feedback and explanations.">
-<title>Class 12 Chemistry Practice | Chemistry Achievers Academy</title>
+<meta name="description" content="{{description}}">
+<title>{{title}} | Chemistry Achievers Academy</title>
 <link rel="stylesheet" href="./site.css">
-<script src="./question-bank.js" defer></script>
+<script src="./{{bank}}.js" defer></script>
 <script src="./practice.js" defer></script>
 </head>
 <body>
 <header><div class="wrap">
   <nav aria-label="Academy links"><strong>Chemistry Achievers Academy</strong><a href="https://wa.me/919677795536">Ask a doubt ↗</a></nav>
-  <h1>Class 12 Chemistry Practice</h1>
-  <p>500 MCQs across 10 chapters. Get feedback after every answer.</p>
+  <nav class="section-nav" aria-label="Quiz sections">
+    <a href="./" {{pyqCurrent}}>2026 Board Exam PYQs</a>
+    <a href="./practice.html" {{practiceCurrent}}>Practice MCQ Test</a>
+  </nav>
+  <h1>{{title}}</h1>
+  <p>{{description}}</p>
 </div></header>
 <main class="wrap">
   <section class="workspace" aria-label="Quiz filters">
