@@ -8,6 +8,8 @@ const summary = get("summary");
 const container = get("questions");
 const pageSize = 10;
 const isBoard = !!document.querySelector('script[src="./board-2026.js"]');
+const paper = get("paper");
+const questionType = get("question-type");
 const key = isBoard ? "chemistry-hub-pyq-2026-v1" : "chemistry-hub-progress-v1";
 let saved = {};
 let page = 0;
@@ -38,7 +40,13 @@ function hasAnswer(item) {
 }
 
 function chapterQuestions() {
-  return chapter.value ? bank.filter(item => item.chapter === chapter.value) : bank;
+  const pool = bank.filter(item =>
+    (!chapter.value || item.chapter === chapter.value) &&
+    (!isBoard || ((!paper.value || item.paperCode === paper.value) &&
+      (!questionType.value || item.category === questionType.value))));
+  return isBoard && paper.value
+    ? pool.sort((a, b) => Number(a.originalQuestionNumber) - Number(b.originalQuestionNumber))
+    : pool;
 }
 
 function matches(item) {
@@ -56,7 +64,7 @@ function updateProgress() {
   const attempted = pool.filter(hasAnswer).length;
   const correct = pool.filter(item => entry(item).answer === item.answerIndex).length;
   const starred = chapterQuestions().filter(item => entry(item).starred).length;
-  summary.textContent = attempted + " / " + pool.length + " MCQs answered · " + correct +
+  summary.textContent = attempted + " / " + pool.length + " objective questions answered · " + correct + " / " + attempted + " marks · " + correct +
     " correct · " + (attempted - correct) + " incorrect · " + starred + " starred";
   get("progress").max = pool.length || 1;
   get("progress").value = attempted;
@@ -121,6 +129,7 @@ function card(item, number) {
   node.tabIndex = -1;
   const top = element("div", "", "card-top");
   const details = ["Question " + number, item.chapter];
+  if (isBoard && item.category) details.push(item.category);
   if (item.paperCode) details.push("Paper " + item.paperCode);
   if (item.originalQuestionNumber) details.push("Q" + item.originalQuestionNumber);
   if (item.marks) details.push(item.marks + (Number(item.marks) === 1 ? " mark" : " marks"));
@@ -200,8 +209,30 @@ function card(item, number) {
     refresh();
     (graded ? choices[0] : reveal).focus();
   });
-  options.append(...choices);
-  actions.append(reveal, retry);
+  if (graded) options.append(...choices);
+  else for (const option of item.options) {
+    const line = element("div");
+    setChemistryText(line, option);
+    options.append(line);
+  }
+  const doubt = element("a", "Ask a doubt on WhatsApp ↗");
+  doubt.target = "_blank";
+  doubt.rel = "noopener";
+  function updateDoubt() {
+    const link = new URL(location.pathname, location.origin);
+    link.searchParams.set("question", item.id);
+    const reference = (isBoard ? "CBSE 2026 Chemistry" : "Chemistry Practice MCQ") +
+      (item.paperCode ? " · Paper " + item.paperCode : "") +
+      (item.originalQuestionNumber ? " · Q" + item.originalQuestionNumber : "") +
+      " · " + item.chapter;
+    const picked = hasAnswer(item) ? "\nI selected option " + String.fromCharCode(65 + entry(item).answer) + "." : "";
+    doubt.href = "https://wa.me/919677795536?text=" + encodeURIComponent(
+      "Hi Sir, I have a doubt about " + reference + "." + picked + "\n" + link.href + "\nMy doubt: "
+    );
+  }
+  doubt.addEventListener("click", updateDoubt);
+  updateDoubt();
+  actions.append(reveal, retry, doubt);
   node.append(top, title, options, actions, feedback);
   refresh();
   return node;
@@ -244,7 +275,29 @@ if (bank.length) {
     render();
     get(first.id)?.focus();
   });
+  if (isBoard) {
+    get("board-filters").hidden = false;
+    const codes = [...new Set(bank.map(item => item.paperCode).filter(Boolean))];
+    for (const code of codes.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))) {
+      paper.add(new Option(code, code));
+    }
+    for (const control of [paper, questionType]) control.addEventListener("change", () => { page = 0; render(); });
+    get("full-paper").addEventListener("click", () => {
+      if (!paper.value) {
+        paper.focus();
+        return;
+      }
+      chapter.value = questionType.value = filter.value = "";
+      page = 0;
+      render();
+      goToTopCard();
+    });
+  }
+  const requested = new URLSearchParams(location.search).get("question");
+  const index = bank.findIndex(item => item.id === requested);
+  if (index >= 0) page = Math.floor(index / pageSize);
   render();
+  if (index >= 0) get(requested)?.focus();
 } else {
   summary.textContent = "The question bank could not load. Refresh this page to try again.";
 }

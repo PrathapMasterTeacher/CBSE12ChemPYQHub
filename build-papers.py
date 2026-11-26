@@ -1,0 +1,97 @@
+from concurrent.futures import ThreadPoolExecutor
+from html import escape
+from io import BytesIO
+from pathlib import Path
+from urllib.request import Request, urlopen
+from zipfile import ZipFile
+import re
+import sys
+
+publish = Path(sys.argv[1])
+pdf_dir = publish / "papers"
+pdf_dir.mkdir(exist_ok=True)
+base = "https://www.cbse.gov.in/cbsenew/"
+archives = {
+    "question-paper": base + "question-paper/2026/XII/Chemistry.zip",
+    "marking-scheme": base + "marking-scheme/2026/XII/Chemistry.zip",
+}
+limit = 50 * 1024 * 1024
+
+
+def paper_code(name):
+    stem = Path(name).stem
+    code = re.search(r"(?<!\d)56[\s_-]+(\d+)[\s_-]+(\d+)(?!\d)", stem)
+    if code:
+        return f"56-{int(code[1])}-{int(code[2])}"
+    if re.search(r"56\s*[\s_(-]+B\b|visually[\s_-]+impaired", stem, re.I):
+        return "56-B"
+    return None
+
+
+def extract(kind):
+    try:
+        request = Request(archives[kind], headers={"User-Agent": "Chemistry Achievers Academy paper archive"})
+        with urlopen(request, timeout=15) as response:
+            data = response.read(limit + 1)
+        if len(data) > limit:
+            raise ValueError("Archive exceeds size limit")
+        with ZipFile(BytesIO(data)) as archive:
+            matches = {}
+            for member in archive.infolist():
+                if Path(member.filename).suffix.lower() != ".pdf" or member.file_size > limit:
+                    continue
+                code = paper_code(member.filename)
+                if code:
+                    matches.setdefault(code, []).append(member)
+            files = {}
+            for code, candidates in matches.items():
+                english = [member for member in candidates if "english" in member.filename.lower()]
+                candidates = english or candidates
+                if len(candidates) != 1:
+                    continue
+                data = archive.read(candidates[0])
+                if data.startswith(b"%PDF-"):
+                    filename = f"{code}-{kind}.pdf"
+                    (pdf_dir / filename).write_bytes(data)
+                    files[code] = filename
+            return files
+    except (OSError, ValueError, RuntimeError) as error:
+        print(f"CBSE {kind} archive unavailable: {error}")
+        return {}
+    except Exception as error:
+        print(f"Could not extract CBSE {kind} PDFs: {error}")
+        return {}
+
+
+with ThreadPoolExecutor(max_workers=2) as pool:
+    papers, schemes = pool.map(extract, archives)
+
+cards = []
+for code in sorted(papers.keys() & schemes.keys()):
+    label = "Visually Impaired Paper (56B)" if code == "56-B" else "Set " + code.replace("-", "/")
+    cards.append(f"""<article class="card"><h2>{escape(label)}</h2>
+<div class="paper-links">
+<a href="./papers/{papers[code]}" target="_blank" rel="noopener">Open question paper PDF ↗</a>
+<a href="./papers/{schemes[code]}" target="_blank" rel="noopener">Open marking scheme PDF ↗</a>
+</div></article>""")
+
+status = "" if cards else "<p>Open the official CBSE archives below to find your paper and marking scheme by set code.</p>"
+page = f"""<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2026 Papers &amp; Marking Schemes | Chemistry Achievers Academy</title>
+<link rel="stylesheet" href="./site.css"></head>
+<body><header><div class="wrap">
+<nav aria-label="Academy links"><strong>Chemistry Achievers Academy</strong><a href="https://wa.me/919677795536">Ask a doubt ↗</a></nav>
+<nav class="section-nav" aria-label="Quiz sections"><a href="./">2026 Board Exam PYQs</a>
+<a href="./practice.html">Practice MCQ Test</a><a href="./papers.html" aria-current="page">2026 Papers &amp; Marking Schemes</a></nav>
+<h1>2026 Papers &amp; Marking Schemes</h1><p>CBSE Class 12 Chemistry · Board Examination</p>
+</div></header><main class="wrap">
+<div class="paper-list">{''.join(cards)}</div>{status}
+<section class="card"><h2>Official CBSE archives</h2><div class="paper-links">
+<a href="{archives['question-paper']}">All Chemistry question papers (ZIP)</a>
+<a href="{archives['marking-scheme']}">All Chemistry marking schemes (ZIP)</a>
+</div></section></main>
+<footer class="wrap"><a href="https://chemistryachieversacademy.in">Academy website ↗</a></footer></body></html>"""
+(publish / "papers.html").write_text(page, encoding="utf-8")
+print(f"Published {len(cards)} matched CBSE paper sets.")

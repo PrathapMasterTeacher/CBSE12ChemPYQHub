@@ -16,6 +16,7 @@
   <nav class="section-nav" aria-label="Quiz sections">
     <a href="./" {{pyqCurrent}}>2026 Board Exam PYQs</a>
     <a href="./practice.html" {{practiceCurrent}}>Practice MCQ Test</a>
+    <a href="./papers.html">2026 Papers &amp; Marking Schemes</a>
   </nav>
   <h1>{{title}}</h1>
   <p>{{description}}</p>
@@ -36,6 +37,16 @@
       <progress id="progress" aria-label="Chapter practice progress" max="1" value="0"></progress>
       <p id="storage-note" hidden>Progress is saved for this visit only.</p>
     </div>
+  </section>
+  <section class="workspace board-filters" id="board-filters" aria-label="2026 question filters" hidden>
+    <label for="paper">Paper set</label><select id="paper"><option value="">All sets</option></select>
+    <label for="question-type">Question type</label><select id="question-type">
+      <option value="">All types</option><option value="MCQ">1-mark MCQ</option>
+      <option value="Assertion–Reason">Assertion–Reason</option><option value="2 Marks">2 Marks</option>
+      <option value="3 Marks">3 Marks</option><option value="Case-Based">Case-Based</option>
+      <option value="5 Marks">5 Marks</option>
+    </select>
+    <button id="full-paper" type="button">View full paper</button>
   </section>
   <div class="list-head"><h2 id="chapter-heading">Practice questions</h2><p id="page-info"></p></div>
   <div id="questions"></div>
