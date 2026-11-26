@@ -5,7 +5,7 @@ const root = name => new URL(name, import.meta.url);
 const publish = new URL('./public/', import.meta.url);
 await mkdir(publish, { recursive: true });
 
-for (const file of ['index.html', 'home.js', 'practice.js', 'site.css', 'account.html', 'account.js', 'auth-client.js', 'history.js']) {
+for (const file of ['index.html', 'home.js', 'practice.js', 'site.css', 'account.html', 'account.js', 'auth-client.js', 'history.js', 'papers.html', 'papers-2025.html', 'papers-2024.html', 'papers-2023.html', 'papers-2022.html', 'papers-2021.html']) {
   await copyFile(root(file), new URL(file, publish));
 }
 
@@ -66,7 +66,7 @@ for (const section of sections) {
     'window.chemistryQuestions = ' + JSON.stringify(content) + ';\n');
 }
 
-for (const year of ['2026', '2025', '2024', '2023', '2022', '2021']) {
+for (const year of ['2026', '2025', '2024', '2023', '2022']) {
   const papers = spawnSync('python3', [root('build-papers.py').pathname, publish.pathname, year], { stdio: 'inherit' });
-  if (papers.error || papers.status !== 0) throw new Error('Could not build the ' + year + ' papers page.');
+  if (papers.error || papers.status !== 0) console.warn('Using official archive links for ' + year + '.');
 }
