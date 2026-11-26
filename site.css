@@ -6,3 +6,5 @@
 .account{max-width:36rem;padding-top:1rem}.account form{display:grid;gap:.5rem;margin-top:1rem}.account input{font:inherit;padding:.6rem;border:1px solid #adbfca;border-radius:.5rem;width:100%}.account h2{margin-top:0}
 
 .history-table{overflow:auto;margin:1rem 0}.history-table table{border-collapse:collapse;width:100%;font-size:.9rem}.history-table th,.history-table td{padding:.5rem;text-align:left;border-bottom:1px solid var(--line)}
+
+.mcq-test-one header{background:linear-gradient(115deg,#172448,#16475d)}.mcq-test-one .card{border-inline-start:4px solid #27878a}.mcq-test-one .card-top p{color:#314c7a;font-weight:700}.mcq-test-one .section-nav [aria-current=page]{background:#ffe6a8;color:#192a48}.test-one-filters{margin-top:-.75rem;grid-template-columns:max-content minmax(0,16rem)}

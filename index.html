@@ -18,6 +18,7 @@
   <nav class="section-nav" aria-label="Quiz sections">
     <a href="./" {{pyqCurrent}}>2026 Board Exam PYQs</a>
     <a href="./practice.html" {{practiceCurrent}}>Practice MCQ Test</a>
+    <a href="./mcq-test-1.html" {{testOneCurrent}}>MCQ Test 1</a>
     <a href="./papers.html">2026 Papers &amp; Marking Schemes</a><a href="./account.html">Student sign in</a>
   </nav>
   <h1>{{title}}</h1>
@@ -50,6 +51,11 @@
       <option value="5 Marks">5 Marks</option>
     </select>
     <button id="full-paper" type="button">View full paper</button>
+  </section>
+  <section class="workspace test-one-filters" id="test-one-filters" aria-label="MCQ Test 1 filters" hidden>
+    <label for="test-set">Question set</label><select id="test-set">
+      <option value="">Both sets</option><option value="1">Set 1</option><option value="2">Set 2</option>
+    </select>
   </section>
   <div class="list-head"><h2 id="chapter-heading">Practice questions</h2><p id="page-info"></p></div>
   <div id="questions"></div>

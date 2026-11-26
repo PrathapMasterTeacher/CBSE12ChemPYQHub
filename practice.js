@@ -10,7 +10,9 @@ const pageSize = 10;
 const isBoard = !!document.querySelector('script[src="./board-2026.js"]');
 const paper = get("paper");
 const questionType = get("question-type");
-const key = isBoard ? "chemistry-hub-pyq-2026-v1" : "chemistry-hub-progress-v1";
+const isTestOne = !!document.querySelector('script[src="./mcq-test-1-bank.js"]');
+const testSet = get("test-set");
+const key = isTestOne ? "chemistry-hub-test-one-v1" : isBoard ? "chemistry-hub-pyq-2026-v1" : "chemistry-hub-progress-v1";
 let saved = {};
 let page = 0;
 let visible = [];
@@ -34,7 +36,7 @@ async function recordAttempt(item, selected) {
       question_id: item.id,
       chapter: item.chapter,
       selected,
-      correct: selected === item.answerIndex
+      correct: isCorrect(item, selected)
     });
     if (error && error.code !== "23505") throw error;
   } catch {
@@ -54,6 +56,10 @@ function entry(item) {
   return saved[item.id] || {};
 }
 
+function isCorrect(item, answer) {
+  return Number.isInteger(answer) && (answer === item.answerIndex || answer === item.alternateAnswerIndex);
+}
+
 function hasAnswer(item) {
   const answer = entry(item).answer;
   return Number.isInteger(answer) && answer >= 0 && answer < item.options.length;
@@ -62,6 +68,7 @@ function hasAnswer(item) {
 function chapterQuestions() {
   const pool = bank.filter(item =>
     (!chapter.value || item.chapter === chapter.value) &&
+    (!isTestOne || !testSet.value || String(item.setNumber) === testSet.value) &&
     (!isBoard || ((!paper.value || item.paperCode === paper.value) &&
       (!questionType.value || item.category === questionType.value))));
   return isBoard && paper.value
@@ -72,8 +79,8 @@ function chapterQuestions() {
 function matches(item) {
   switch (filter.value) {
     case "new": return item.answerIndex !== null && !hasAnswer(item);
-    case "correct": return entry(item).answer === item.answerIndex;
-    case "wrong": return hasAnswer(item) && entry(item).answer !== item.answerIndex;
+    case "correct": return isCorrect(item, entry(item).answer);
+    case "wrong": return hasAnswer(item) && !isCorrect(item, entry(item).answer);
     case "starred": return entry(item).starred === true;
     default: return true;
   }
@@ -82,7 +89,7 @@ function matches(item) {
 function updateProgress() {
   const pool = chapterQuestions().filter(item => item.answerIndex !== null);
   const attempted = pool.filter(hasAnswer).length;
-  const correct = pool.filter(item => entry(item).answer === item.answerIndex).length;
+  const correct = pool.filter(item => isCorrect(item, entry(item).answer)).length;
   const starred = chapterQuestions().filter(item => entry(item).starred).length;
   summary.textContent = attempted + " / " + pool.length + " objective questions answered · " + correct + " / " + attempted + " marks · " + correct +
     " correct · " + (attempted - correct) + " incorrect · " + starred + " starred";
@@ -150,6 +157,7 @@ function card(item, number) {
   const top = element("div", "", "card-top");
   const details = ["Question " + number, item.chapter];
   if (isBoard && item.category) details.push(item.category);
+  if (isTestOne) details.push("Set " + item.setNumber, item.originalQuestionNumber >= 13 ? "Assertion–Reason" : "MCQ");
   if (item.paperCode) details.push("Paper " + item.paperCode);
   if (item.originalQuestionNumber) details.push("Q" + item.originalQuestionNumber);
   if (item.marks) details.push(item.marks + (Number(item.marks) === 1 ? " mark" : " marks"));
@@ -203,15 +211,15 @@ function card(item, number) {
     const show = answered || revealed;
     choices.forEach((choice, index) => {
       choice.disabled = show || !graded;
-      choice.classList.toggle("correct", show && index === item.answerIndex);
-      choice.classList.toggle("wrong", answered && index === selected && selected !== item.answerIndex);
+      choice.classList.toggle("correct", show && isCorrect(item, index));
+      choice.classList.toggle("wrong", answered && index === selected && !isCorrect(item, selected));
     });
     feedback.hidden = !show;
     reveal.hidden = show;
     retry.hidden = !show;
     setChemistryText(feedback, show ?
-      (answered ? (selected === item.answerIndex ? "Correct. " : "Incorrect. ") : "") +
-      (graded ? "Answer: " + String.fromCharCode(65 + item.answerIndex) + ".<br>" : "") +
+      (answered ? (isCorrect(item, selected) ? "Correct. " : "Incorrect. ") : "") +
+      (graded ? "Answer: " + String.fromCharCode(65 + item.answerIndex) + (Number.isInteger(item.alternateAnswerIndex) ? " (also accepts " + String.fromCharCode(65 + item.alternateAnswerIndex) + ")" : "") + ".<br>" : "") +
       (item.solution || (graded ? item.options[item.answerIndex] : "Solution unavailable.")) : "");
   }
 
@@ -242,7 +250,7 @@ function card(item, number) {
   function updateDoubt() {
     const link = new URL(location.pathname, location.origin);
     link.searchParams.set("question", item.id);
-    const reference = (isBoard ? "CBSE 2026 Chemistry" : "Chemistry Practice MCQ") +
+    const reference = (isBoard ? "CBSE 2026 Chemistry" : isTestOne ? "MCQ Test 1 · Set " + item.setNumber : "Chemistry Practice MCQ") +
       (item.paperCode ? " · Paper " + item.paperCode : "") +
       (item.originalQuestionNumber ? " · Q" + item.originalQuestionNumber : "") +
       " · " + item.chapter;
@@ -313,6 +321,11 @@ if (bank.length) {
       render();
       goToTopCard();
     });
+  }
+  if (isTestOne) {
+    document.body.classList.add("mcq-test-one");
+    get("test-one-filters").hidden = false;
+    testSet.addEventListener("change", () => { page = 0; render(); });
   }
   const requested = new URLSearchParams(location.search).get("question");
   const index = bank.findIndex(item => item.id === requested);

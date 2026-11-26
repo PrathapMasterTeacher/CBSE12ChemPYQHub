@@ -12,6 +12,12 @@ for (const file of ['practice.js', 'site.css', 'account.html', 'account.js', 'au
 const template = await readFile(root('index.html'), 'utf8');
 const sections = [
   {
+    file: 'mcq-test-1.html', source: 'mcq-test-1.json', bank: 'mcq-test-1-bank',
+    title: 'MCQ Test 1',
+    description: '320 questions with detailed solutions · 32 per chapter · two sets of 16.',
+    pyqCurrent: '', practiceCurrent: '', testOneCurrent: 'aria-current="page"'
+  },
+  {
     file: 'index.html', source: '2026.json', bank: 'board-2026',
     title: '2026 Board Exam PYQs',
     description: 'Practise past exam questions by chapter and review the solutions.',
@@ -49,12 +55,13 @@ for (const section of sections) {
       chapter: String(item.chapter ?? 'Mixed topics'),
       question: String(item.question ?? ''),
       options, answerIndex, category,
+      setNumber: item.setNumber, alternateAnswerIndex: item.alternateAnswerIndex,
       solution: String(item.solution || item.answer || ''),
       paperCode: item.paperCode, marks: Number.isFinite(marks) ? marks : undefined,
       originalQuestionNumber: item.originalQuestionNumber
     };
   });
-  await writeFile(new URL(section.file, publish), template.replace(/\{\{(\w+)\}\}/g, (_, name) => section[name]));
+  await writeFile(new URL(section.file, publish), template.replace(/\{\{(\w+)\}\}/g, (_, name) => section[name] ?? ""));
   await writeFile(new URL(section.bank + '.js', publish),
     'window.chemistryQuestions = ' + JSON.stringify(content) + ';\n');
 }

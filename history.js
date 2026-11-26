@@ -41,7 +41,7 @@
       const row = document.createElement("tr");
       const values = [new Date(entry.attempted_at).toLocaleString()];
       if (teacher) values.push(entry.email || "—");
-      values.push(entry.quiz === "board-2026" ? "2026 Board PYQs" : "MCQ Practice", entry.chapter, entry.correct ? "1 / 1" : "0 / 1");
+      values.push(entry.quiz === "board-2026" ? "2026 Board PYQs" : entry.question_id.startsWith("mcq-test-1-") ? "MCQ Test 1" : "MCQ Practice", entry.chapter, entry.correct ? "1 / 1" : "0 / 1");
       for (const value of values) {
         const cell = document.createElement("td");
         cell.textContent = value;
