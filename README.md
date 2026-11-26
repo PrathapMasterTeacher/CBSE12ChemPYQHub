@@ -9,7 +9,7 @@ Practise Class 12 Chemistry previous years’ questions (PYQs) by chapter, year 
 | Resource | Availability |
 | --- | --- |
 | **2026 Board Exam PYQs** | [Download the 2026 question bank (JSON, ~19 MB)](./2026.json) |
-| **Practice MCQ Test** | Test file pending |
+| **Practice MCQ Test** | [Download 500 practice MCQs (JSON)](./Practice_mcq_test.json) |
 | **2025 and 2024 Board Exam PYQs** | Planned |
 
 ## ✍️ How to revise
