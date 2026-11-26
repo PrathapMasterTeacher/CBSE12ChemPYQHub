@@ -9,11 +9,11 @@ import sys
 
 publish = Path(sys.argv[1])
 year = int(sys.argv[2]) if len(sys.argv) > 2 else 2026
-if year not in (2025, 2026):
+if year not in range(2021, 2027):
     raise ValueError("Unsupported CBSE exam year")
-page_name = "papers.html" if year == 2026 else "papers-2025.html"
-folder_name = "papers" if year == 2026 else "papers-2025"
-question_zip = "CHEMISTRY.zip" if year == 2025 else "Chemistry.zip"
+page_name = "papers.html" if year == 2026 else f"papers-{year}.html"
+folder_name = "papers" if year == 2026 else f"papers-{year}"
+question_zip = "CHEMISTRY.zip" if year in (2023, 2024, 2025) else "Chemistry.zip"
 pdf_dir = publish / folder_name
 pdf_dir.mkdir(exist_ok=True)
 base = "https://www.cbse.gov.in/cbsenew/"
@@ -69,8 +69,14 @@ def extract(kind):
         return {}
 
 
-with ThreadPoolExecutor(max_workers=2) as pool:
-    papers, schemes = pool.map(extract, archives)
+if year == 2022:
+    del archives["marking-scheme"]
+papers, schemes = {}, {}
+if year != 2021:
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        files = dict(zip(archives, pool.map(extract, archives)))
+    papers = files["question-paper"]
+    schemes = files.get("marking-scheme", {})
 
 cards = []
 for code in sorted(papers.keys() | schemes.keys()):
@@ -84,23 +90,44 @@ for code in sorted(papers.keys() | schemes.keys()):
     cards.append(f'<article class="card"><h2>{escape(label)}</h2><div class="paper-links">{"".join(links)}</div></article>')
 
 status = "" if cards else "<p>Open the official CBSE archives below to find your paper and marking scheme by set code.</p>"
+title = f"{year} Board Papers &amp; Marking Schemes"
+archive_links = "".join(
+    f'<a href="{url}">All Chemistry {kind.replace("-", " ")}s (ZIP)</a>'
+    for kind, url in archives.items()
+)
+if year == 2022:
+    archive_links += '<a href="https://www.cbse.gov.in/cbsenew/marking-scheme.html">CBSE marking scheme index</a>'
+    status = "<p>The official Chemistry question paper archive is below. A main-exam marking scheme ZIP was not verified.</p>"
+if year == 2021:
+    title = "2021–22 Sample Papers &amp; Marking Schemes"
+    status = "<p>CBSE cancelled the regular 2021 Class XII board examination. These are official sample papers for the 2021–22 term-based session.</p>"
+    sample_base = "https://cbseacademic.nic.in/web_material/SQP/ClassXII_2021_22/"
+    for term, suffix in ((1, ""), (2, "_Term2")):
+        cards.append(f'<article class="card"><h2>Term {term} · Chemistry</h2><div class="paper-links">'
+                     f'<a href="{sample_base}Chemistry-SQP{suffix}.pdf">Sample question paper PDF ↗</a>'
+                     f'<a href="{sample_base}Chemistry-MS{suffix}.pdf">Marking scheme PDF ↗</a></div></article>')
+    archive_links = '<a href="https://cbseacademic.nic.in/SQP_CLASSXII_2021-22.html">CBSE Academic 2021–22 sample-paper index ↗</a>'
+older_links = "\n".join(
+    f'<a href="./papers-{value}.html"{" aria-current=page" if year == value else ""}>'
+    f'{f"{value} Board Papers &amp; Marking Schemes" if value != 2021 else "2021–22 Sample Papers &amp; Marking Schemes"}</a>'
+    for value in (2024, 2023, 2022, 2021)
+)
 current_2026 = 'aria-current="page"' if year == 2026 else ""
 current_2025 = 'aria-current="page"' if year == 2025 else ""
 page = f"""<!doctype html>
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{year} Board Papers &amp; Marking Schemes | Chemistry Achievers Academy</title>
+<title>{title} | Chemistry Achievers Academy</title>
 <link rel="stylesheet" href="./site.css"></head>
 <body><header><div class="wrap">
 <nav aria-label="Academy links"><strong>Chemistry Achievers Academy</strong><a href="https://wa.me/919677795536">Ask a doubt ↗</a></nav>
 <nav class="section-nav" aria-label="Quiz sections"><a href="./">2026 Board Exam PYQs</a>
-<a href="./practice.html">Practice MCQ Test</a><a href="./mcq-test-1.html">MCQ Test 1</a><a href="./papers.html" {current_2026}>2026 Board Papers &amp; Marking Schemes</a><a href="./papers-2025.html" {current_2025}>2025 Board Papers &amp; Marking Schemes</a><a href="./account.html">Student sign in</a></nav>
-<h1>{year} Board Papers &amp; Marking Schemes</h1><p>CBSE Class 12 Chemistry · Board Examination</p>
+<a href="./practice.html">Practice MCQ Test</a><a href="./mcq-test-1.html">MCQ Test 1</a><a href="./papers.html" {current_2026}>2026 Board Papers &amp; Marking Schemes</a><a href="./papers-2025.html" {current_2025}>2025 Board Papers &amp; Marking Schemes</a>{older_links}<a href="./account.html">Student sign in</a></nav>
+<h1>{title}</h1><p>CBSE Class 12 Chemistry · Board Examination</p>
 </div></header><main class="wrap">
 <div class="paper-list">{''.join(cards)}</div>{status}
 <section class="card"><h2>Official CBSE archives</h2><div class="paper-links">
-<a href="{archives['question-paper']}">All Chemistry question papers (ZIP)</a>
-<a href="{archives['marking-scheme']}">All Chemistry marking schemes (ZIP)</a>
+{archive_links}
 </div></section></main>
 <footer class="wrap"><a href="https://chemistryachieversacademy.in">Academy website ↗</a></footer></body></html>"""
 (publish / page_name).write_text(page, encoding="utf-8")
