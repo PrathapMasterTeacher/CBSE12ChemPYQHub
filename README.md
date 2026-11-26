@@ -4,8 +4,6 @@
 
 Practise Class 12 Chemistry previous years’ questions (PYQs) by chapter, year and marks. Use the answer keys and official marking schemes to see how marks are awarded.
 
-**தமிழ் உதவி** · அத்தியாயம் மற்றும் மதிப்பெண் அடிப்படையில் பயிற்சி செய்யுங்கள். உங்கள் பதில்களை விடைக்குறிப்பு மற்றும் மதிப்பீட்டுத் திட்டத்துடன் ஒப்பிட்டுப் பாருங்கள்.
-
 ## 📚 Study resources
 
 | Resource | Availability |
@@ -22,7 +20,6 @@ Practise Class 12 Chemistry previous years’ questions (PYQs) by chapter, year 
 
 ---
 
-**M. Prathap, M.Sc., B.Ed.** · 8+ years of teaching experience  
-**Student support in Tamil and English**
+**M. Prathap, M.Sc., B.Ed.** · 8+ years of teaching experience
 
 [🌐 Academy Website](https://chemistryachieversacademy.in) · [💬 WhatsApp for Chemistry Doubts](https://wa.me/919677795536)
