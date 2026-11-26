@@ -89,13 +89,13 @@ current_2025 = 'aria-current="page"' if year == 2025 else ""
 page = f"""<!doctype html>
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{year} Papers &amp; Marking Schemes | Chemistry Achievers Academy</title>
+<title>{year} Board Papers &amp; Marking Schemes | Chemistry Achievers Academy</title>
 <link rel="stylesheet" href="./site.css"></head>
 <body><header><div class="wrap">
 <nav aria-label="Academy links"><strong>Chemistry Achievers Academy</strong><a href="https://wa.me/919677795536">Ask a doubt ↗</a></nav>
 <nav class="section-nav" aria-label="Quiz sections"><a href="./">2026 Board Exam PYQs</a>
-<a href="./practice.html">Practice MCQ Test</a><a href="./mcq-test-1.html">MCQ Test 1</a><a href="./papers.html" {current_2026}>2026 Papers &amp; Marking Schemes</a><a href="./papers-2025.html" {current_2025}>2025 Board Papers</a><a href="./account.html">Student sign in</a></nav>
-<h1>{year} Papers &amp; Marking Schemes</h1><p>CBSE Class 12 Chemistry · Board Examination</p>
+<a href="./practice.html">Practice MCQ Test</a><a href="./mcq-test-1.html">MCQ Test 1</a><a href="./papers.html" {current_2026}>2026 Board Papers &amp; Marking Schemes</a><a href="./papers-2025.html" {current_2025}>2025 Board Papers &amp; Marking Schemes</a><a href="./account.html">Student sign in</a></nav>
+<h1>{year} Board Papers &amp; Marking Schemes</h1><p>CBSE Class 12 Chemistry · Board Examination</p>
 </div></header><main class="wrap">
 <div class="paper-list">{''.join(cards)}</div>{status}
 <section class="card"><h2>Official CBSE archives</h2><div class="paper-links">
