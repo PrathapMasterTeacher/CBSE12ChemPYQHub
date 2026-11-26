@@ -66,5 +66,7 @@ for (const section of sections) {
     'window.chemistryQuestions = ' + JSON.stringify(content) + ';\n');
 }
 
-const papers = spawnSync('python3', [root('build-papers.py').pathname, publish.pathname], { stdio: 'inherit' });
-if (papers.error || papers.status !== 0) throw new Error('Could not build the papers page.');
+for (const year of ['2026', '2025']) {
+  const papers = spawnSync('python3', [root('build-papers.py').pathname, publish.pathname, year], { stdio: 'inherit' });
+  if (papers.error || papers.status !== 0) throw new Error('Could not build the ' + year + ' papers page.');
+}

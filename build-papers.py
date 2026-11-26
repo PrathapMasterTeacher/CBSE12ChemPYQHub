@@ -8,12 +8,18 @@ import re
 import sys
 
 publish = Path(sys.argv[1])
-pdf_dir = publish / "papers"
+year = int(sys.argv[2]) if len(sys.argv) > 2 else 2026
+if year not in (2025, 2026):
+    raise ValueError("Unsupported CBSE exam year")
+page_name = "papers.html" if year == 2026 else "papers-2025.html"
+folder_name = "papers" if year == 2026 else "papers-2025"
+question_zip = "CHEMISTRY.zip" if year == 2025 else "Chemistry.zip"
+pdf_dir = publish / folder_name
 pdf_dir.mkdir(exist_ok=True)
 base = "https://www.cbse.gov.in/cbsenew/"
 archives = {
-    "question-paper": base + "question-paper/2026/XII/Chemistry.zip",
-    "marking-scheme": base + "marking-scheme/2026/XII/Chemistry.zip",
+    "question-paper": base + f"question-paper/{year}/XII/{question_zip}",
+    "marking-scheme": base + f"marking-scheme/{year}/XII/Chemistry.zip",
 }
 limit = 50 * 1024 * 1024
 
@@ -67,25 +73,29 @@ with ThreadPoolExecutor(max_workers=2) as pool:
     papers, schemes = pool.map(extract, archives)
 
 cards = []
-for code in sorted(papers.keys() & schemes.keys()):
+for code in sorted(papers.keys() | schemes.keys()):
     label = "Visually Impaired Paper (56B)" if code == "56-B" else "Set " + code.replace("-", "/")
-    cards.append(f"""<article class="card"><h2>{escape(label)}</h2>
-<div class="paper-links">
-<a href="./papers/{papers[code]}" target="_blank" rel="noopener">Open question paper PDF ↗</a>
-<a href="./papers/{schemes[code]}" target="_blank" rel="noopener">Open marking scheme PDF ↗</a>
-</div></article>""")
+    links = []
+    for files, title in ((papers, "question paper"), (schemes, "marking scheme")):
+        if code in files:
+            links.append(f'<a href="./{folder_name}/{files[code]}" target="_blank" rel="noopener">Open {title} PDF ↗</a>')
+        else:
+            links.append(f"<span>See official archive below for the {title}.</span>")
+    cards.append(f'<article class="card"><h2>{escape(label)}</h2><div class="paper-links">{"".join(links)}</div></article>')
 
 status = "" if cards else "<p>Open the official CBSE archives below to find your paper and marking scheme by set code.</p>"
+current_2026 = 'aria-current="page"' if year == 2026 else ""
+current_2025 = 'aria-current="page"' if year == 2025 else ""
 page = f"""<!doctype html>
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>2026 Papers &amp; Marking Schemes | Chemistry Achievers Academy</title>
+<title>{year} Papers &amp; Marking Schemes | Chemistry Achievers Academy</title>
 <link rel="stylesheet" href="./site.css"></head>
 <body><header><div class="wrap">
 <nav aria-label="Academy links"><strong>Chemistry Achievers Academy</strong><a href="https://wa.me/919677795536">Ask a doubt ↗</a></nav>
 <nav class="section-nav" aria-label="Quiz sections"><a href="./">2026 Board Exam PYQs</a>
-<a href="./practice.html">Practice MCQ Test</a><a href="./mcq-test-1.html">MCQ Test 1</a><a href="./papers.html" aria-current="page">2026 Papers &amp; Marking Schemes</a><a href="./account.html">Student sign in</a></nav>
-<h1>2026 Papers &amp; Marking Schemes</h1><p>CBSE Class 12 Chemistry · Board Examination</p>
+<a href="./practice.html">Practice MCQ Test</a><a href="./mcq-test-1.html">MCQ Test 1</a><a href="./papers.html" {current_2026}>2026 Papers &amp; Marking Schemes</a><a href="./papers-2025.html" {current_2025}>2025 Board Papers</a><a href="./account.html">Student sign in</a></nav>
+<h1>{year} Papers &amp; Marking Schemes</h1><p>CBSE Class 12 Chemistry · Board Examination</p>
 </div></header><main class="wrap">
 <div class="paper-list">{''.join(cards)}</div>{status}
 <section class="card"><h2>Official CBSE archives</h2><div class="paper-links">
@@ -93,5 +103,5 @@ page = f"""<!doctype html>
 <a href="{archives['marking-scheme']}">All Chemistry marking schemes (ZIP)</a>
 </div></section></main>
 <footer class="wrap"><a href="https://chemistryachieversacademy.in">Academy website ↗</a></footer></body></html>"""
-(publish / "papers.html").write_text(page, encoding="utf-8")
-print(f"Published {len(cards)} matched CBSE paper sets.")
+(publish / page_name).write_text(page, encoding="utf-8")
+print(f"Published {len(cards)} CBSE {year} set cards, with {len(papers.keys() & schemes.keys())} matched pairs.")
