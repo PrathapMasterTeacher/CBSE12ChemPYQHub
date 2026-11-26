@@ -1,2 +1,28 @@
-# CBSE12ChemPYQHub
-CBSE Class 12 Chemistry PYQs by chapter, year and marks, with answer keys and official marking schemes for focused board exam revision. Bilingual support in Tamil &amp; English.   M. Prathap, M.Sc., B.Ed. | 8+ years of teaching experience  Website: Chemistryachieversacademy.in WhatsApp: 9677795536
+# 🧪 CBSE Class 12 Chemistry PYQ Hub
+
+**Chemistry Achievers Academy** · **CBSE Board Exam Revision**
+
+Practise Class 12 Chemistry previous years’ questions (PYQs) by chapter, year and marks. Use the answer keys and official marking schemes to see how marks are awarded.
+
+**தமிழ் உதவி** · அத்தியாயம் மற்றும் மதிப்பெண் அடிப்படையில் பயிற்சி செய்யுங்கள். உங்கள் பதில்களை விடைக்குறிப்பு மற்றும் மதிப்பீட்டுத் திட்டத்துடன் ஒப்பிட்டுப் பாருங்கள்.
+
+## 📚 Study resources
+
+| Resource | Availability |
+| --- | --- |
+| **2026 Board Exam PYQs** | [Download the 2026 question bank (JSON, ~19 MB)](./2026.json) |
+| **Practice MCQ Test** | Test file pending |
+| **2025 and 2024 Board Exam PYQs** | Planned |
+
+## ✍️ How to revise
+
+1. Choose a chapter and practise questions for your target mark value.
+2. Write your answers under timed conditions.
+3. Check the marking scheme and revise the steps or points you missed.
+
+---
+
+**M. Prathap, M.Sc., B.Ed.** · 8+ years of teaching experience  
+**Student support in Tamil and English**
+
+[🌐 Academy Website](https://chemistryachieversacademy.in) · [💬 WhatsApp for Chemistry Doubts](https://wa.me/919677795536)
