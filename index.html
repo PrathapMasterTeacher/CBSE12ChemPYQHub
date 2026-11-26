@@ -3,24 +3,44 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#102540">
-<title>CBSE Class 12 Chemistry PYQ Hub</title>
+<meta name="theme-color" content="#10283c">
+<meta name="description" content="Practise 500 CBSE Class 12 Chemistry MCQs with instant feedback and explanations.">
+<title>Class 12 Chemistry Practice | Chemistry Achievers Academy</title>
 <link rel="stylesheet" href="./site.css">
-
+<script src="./question-bank.js" defer></script>
+<script src="./practice.js" defer></script>
 </head>
 <body>
-<header class="top"><nav class="wrap" aria-label="Main navigation"><a class="brand" href="./">Chemistry Achievers Academy</a><a href="./practice.html">Practice MCQ Test</a></nav></header>
-<main>
-<section class="hero"><div class="wrap">
-<h1>CBSE Class 12 Chemistry PYQ Hub</h1>
-<p>Revise with the 2026 board exam question bank or test yourself with 500 practice MCQs across 10 chapters.</p>
-<a class="action" href="./practice.html">Start practising</a>
-</div></section>
-<div class="wrap cards">
-<section class="panel"><h2>2026 Board Exam PYQs</h2><p>Get the 2026 question bank with answer keys and marking schemes.</p><a href="./2026.json" download>Download question bank (JSON, 19 MB)</a></section>
-<section class="panel"><h2>Practice MCQ Test</h2><p>Choose a chapter, answer questions and review the explanation after each response.</p><div class="links"><a href="./practice.html">Open the practice test</a><a href="./Practice_mcq_test.json" download>Download JSON</a></div></section>
-</div>
+<header><div class="wrap">
+  <nav aria-label="Academy links"><strong>Chemistry Achievers Academy</strong><a href="https://wa.me/919677795536">Ask a doubt ↗</a></nav>
+  <h1>Class 12 Chemistry Practice</h1>
+  <p>500 MCQs across 10 chapters. Get feedback after every answer.</p>
+</div></header>
+<main class="wrap">
+  <section class="workspace" aria-label="Quiz filters">
+    <label for="chapter">Chapter</label>
+    <select id="chapter" disabled><option value="">All chapters</option></select>
+    <label for="status-filter">Practice status</label>
+    <select id="status-filter" disabled>
+      <option value="">All questions</option><option value="new">Unanswered</option>
+      <option value="correct">Correct</option><option value="wrong">Incorrect</option>
+      <option value="starred">Starred</option>
+    </select>
+    <button id="resume" type="button" disabled>Resume practice</button>
+    <div class="progress">
+      <p id="summary" role="status">Loading questions…</p>
+      <progress id="progress" aria-label="Chapter practice progress" max="1" value="0"></progress>
+      <p id="storage-note" hidden>Progress is saved for this visit only.</p>
+    </div>
+  </section>
+  <div class="list-head"><h2 id="chapter-heading">Practice questions</h2><p id="page-info"></p></div>
+  <div id="questions"></div>
+  <nav id="pagination" class="pagination" aria-label="Question pages" hidden>
+    <button id="previous" type="button">← Previous</button>
+    <button id="next" type="button">Next →</button>
+  </nav>
+  <noscript>Enable JavaScript to use the online quiz.</noscript>
 </main>
-<footer><div class="wrap"><p>M. Prathap, M.Sc., B.Ed. · 8+ years of teaching experience</p><div class="links"><a href="https://chemistryachieversacademy.in">Academy website</a><a href="https://wa.me/919677795536">WhatsApp for doubts</a></div></div></footer>
+<footer class="wrap"><p>M. Prathap, M.Sc., B.Ed. · 8+ years of teaching experience</p><a href="https://chemistryachieversacademy.in">Academy website ↗</a></footer>
 </body>
 </html>
